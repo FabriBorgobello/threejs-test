@@ -36,7 +36,7 @@
         0.1,
         100,
       );
-      camera.position.z = 5;
+      camera.position.z = 6;
       scene.add(camera);
 
       // Renderer
@@ -48,17 +48,32 @@
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
 
-      // Object
-      const geometry = new THREE.BoxGeometry();
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
+      // Objects
+      const cube = new THREE.Mesh(
+        new THREE.BoxGeometry(),
+        new THREE.MeshBasicMaterial({ wireframe: true, color: 0xff0000 }),
+      );
+      const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(),
+        new THREE.MeshBasicMaterial({ wireframe: true, color: 0x00ff00 }),
+      );
+      sphere.position.x = -3;
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(),
+        new THREE.MeshBasicMaterial({ wireframe: true, color: 0x0000ff }),
+      );
+      torus.position.x = 3;
+      scene.add(cube, sphere, torus);
 
       // Animation
       const animate = () => {
         requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        cube.rotation.x += 0.005;
+        cube.rotation.y += 0.005;
+        sphere.rotation.x += 0.005;
+        sphere.rotation.y += 0.005;
+        torus.rotation.x += 0.005;
+        torus.rotation.y += 0.005;
         renderer.render(scene, camera);
       };
 
