@@ -18,13 +18,21 @@
       {
         "imports": {
           "three": "https://esm.sh/three@0.162.0",
-          "three/examples/jsm/controls/OrbitControls": "https://esm.sh/three@0.162.0/examples/jsm/controls/OrbitControls"
+          "three/examples/jsm/controls/OrbitControls": "https://esm.sh/three@0.162.0/examples/jsm/controls/OrbitControls",
+          "lil-gui": "https://esm.sh/lil-gui@0.19.2"
         }
       }
     </script>
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+      import GUI from 'lil-gui';
+
+      const gui = new GUI();
+
+      const debug = {
+        baseSegments: 4,
+      };
 
       // Scene
       const scene = new THREE.Scene();
@@ -54,14 +62,17 @@
           1.5, // width
           1.5, // height
           1.5, // depth
+          debug.baseSegments, // widthSegments
+          debug.baseSegments, // heightSegments
+          debug.baseSegments, // depthSegments
         ),
         new THREE.MeshBasicMaterial({ wireframe: true, color: 0xff0000 }),
       );
       const sphere = new THREE.Mesh(
         new THREE.SphereGeometry(
           1, // radius
-          8, // widthSegments
-          8, // heightSegments
+          debug.baseSegments, // widthSegments
+          debug.baseSegments, // heightSegments
         ),
         new THREE.MeshBasicMaterial({ wireframe: true, color: 0x00ff00 }),
       );
@@ -70,13 +81,42 @@
         new THREE.TorusGeometry(
           1, // radius
           0.4, // tube
-          8, // radialSegments
-          12, // tubularSegments
+          debug.baseSegments, // radialSegments
+          debug.baseSegments * 2, // tubularSegments
         ),
         new THREE.MeshBasicMaterial({ wireframe: true, color: 0x0000ff }),
       );
       torus.position.x = 3;
       scene.add(cube, sphere, torus);
+
+      gui
+        .add(debug, 'baseSegments', 1, 32)
+        .step(1)
+        .name('Segments')
+        .onFinishChange(() => {
+          cube.geometry.dispose();
+          cube.geometry = new THREE.BoxGeometry(
+            1.5, // width
+            1.5, // height
+            1.5, // depth
+            debug.baseSegments, // widthSegments
+            debug.baseSegments, // heightSegments
+            debug.baseSegments, // depthSegments
+          );
+          sphere.geometry.dispose();
+          sphere.geometry = new THREE.SphereGeometry(
+            1, // radius
+            debug.baseSegments, // widthSegments
+            debug.baseSegments, // heightSegments
+          );
+          torus.geometry.dispose();
+          torus.geometry = new THREE.TorusGeometry(
+            1, // radius
+            0.4, // tube
+            debug.baseSegments, // radialSegments
+            debug.baseSegments * 2, // tubularSegments
+          );
+        });
 
       // Animation
       const animate = () => {
